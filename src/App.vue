@@ -1,28 +1,39 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app id="inspire">
+    <component :is="layout">
+      <router-view />
+    </component>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Layout from '@/views/layout/Layout.vue';
+import  {
+    routes
+} from '@/router';
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
-}
-</script>
+    Layout,
+  },
+  computed: {
+    layout() {
+      return 'layout';
+    },
+  },
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  data(){
+    return {
+      routes,
+    }
+  },
+  mounted() {
+        console.log(routes)
+        // this.$http.get(`${process.env.VUE_APP_NAVIGATION_API}/navigation`)
+        //   .then(({ data }) => {
+        //     this.routes = data;
+        //   });
+    },
+  
+};
+</script>
