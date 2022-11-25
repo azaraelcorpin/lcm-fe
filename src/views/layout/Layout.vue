@@ -24,8 +24,12 @@
       >
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="text-h6"> MSU GENSAN LOGO </v-list-item-title>
-            <v-list-item-subtitle> Navigation drawers</v-list-item-subtitle>
+            <!-- <img
+                  src="@/assets/MSU_-_Gensan_logo.png"  
+                  alt="MSU GenSan" width="10" height="50"                
+                > -->
+            <v-list-item-title class="text-h4"> I-C-T-O </v-list-item-title>
+            <v-list-item-subtitle> Powered By</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
