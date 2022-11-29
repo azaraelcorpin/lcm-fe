@@ -1,6 +1,6 @@
 <template>
      <div class="v-application--wrap">
-      <v-app-bar color="#800000" app>
+      <v-app-bar color="#808080" app>
         <v-app-bar-nav-icon style="color:aliceblue" @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-app-bar-title style="color:aliceblue">Leave Management</v-app-bar-title>
         <v-spacer />
@@ -21,6 +21,8 @@
       </v-app-bar>
       <v-navigation-drawer app
         v-model="drawer"
+        src="https://wallpaperaccess.com/full/1549409.jpg"
+       
       >
         <v-list-item>
           <v-list-item-content>
@@ -28,8 +30,12 @@
                   src="@/assets/MSU_-_Gensan_logo.png"  
                   alt="MSU GenSan" width="10" height="50"                
                 > -->
-            <v-list-item-title class="text-h4"> I-C-T-O </v-list-item-title>
-            <v-list-item-subtitle> Powered By</v-list-item-subtitle>
+            <!-- <v-list-item-title class="text-h4"> I-C-T-O </v-list-item-title>
+            <v-list-item-subtitle> Powered By</v-list-item-subtitle> -->
+            <div class="logo-holder logo">
+              <h3>ICTO</h3>
+              <p>Information & Communication Technology Office</p>
+            </div>
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
@@ -37,7 +43,7 @@
             <div v-for="item in ConstRoutes" :key="item.path" link>
 
 
-                <v-list-item v-if="!item.children" :to="item.path" ripple="ripple" class="mp-nav-item" active-class="mp-nav-item__active">
+                <v-list-item v-if="!item.children && item.visible" :to="item.path" ripple="ripple" class="white--text mp-nav-item" active-class="mp-nav-item__active">
                     <v-list-item-icon class="layout-drawer__icon">
                         <v-icon>{{item.icon }}</v-icon>
                     </v-list-item-icon>
@@ -49,9 +55,9 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-group v-else class="mp-nav-item" prepend-icon='mdi-view-dashboard'>
+                <v-list-group v-else-if="item.visible" class="white--text mp-nav-item" active-class="white--text mp-nav-item__active" :prepend-icon=item.icon>
                   <template v-slot:activator>
-                    <v-list-item v-if="item.visible" :to="item.path" ripple="ripple" class="mp-nav-item" active-class="mp-nav-item__active">
+                    <v-list-item  :to="item.path" ripple="ripple" class="white--text mp-nav-item" active-class="mp-nav-item__active">
                         <v-list-item-content>
                             <v-list-item-title>
                                 <span>{{item.meta.title}}</span>
@@ -61,14 +67,14 @@
                     </template>
                     
                     <div v-for="child in item.children" :key="child.path">
-                        <v-list-item v-if="child.visible" :to="child.path" ripple="ripple" class="mp-nav-item" active-class="mp-nav-item__active">
+                        <v-list-item style="margin-left:10px;" v-if="child.visible" :to="child.path" ripple="ripple" class="white--text mp-nav-item" active-class="mp-nav-item__active">
                             <v-list-item-icon class="layout-drawer__icon">
-                                <v-icon>{{child.icon }}</v-icon>
+                                <v-icon >{{child.icon }}</v-icon>
                             </v-list-item-icon>
 
                             <v-list-item-content>
                                 <v-list-item-title>
-                                    <span>{{child.meta.title }}</span>
+                                    <span >{{child.meta.title }}</span>
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
@@ -90,17 +96,18 @@
       </transition>
     </v-main>
 
-    <v-footer
+    <v-footer 
       app
       padless
       inset
       style="height:60px;"
     >
-      <v-card
+      <v-card 
         flat
         tile
         width="100%"
-        class="secondary text-center"
+        class="text-center"
+        color="#600000"
         style="height:60px;"
       >
         <v-card-text class="white--text" style="margin-top: -10px;">
@@ -137,3 +144,24 @@ import ProfileAvatar from '@/components/ProfileAvatar.vue'
     }),
   };
   </script>
+
+<!-- https://codepen.io/maheshambure21/pen/MWWgyyG (LOGO) -->
+  <style scoped>
+  @import url('https://fonts.googleapis.com/css?family=Bangers|Cinzel:400,700,900|Lato:100,300,400,700,900|Lobster|Lora:400,700|Mansalva|Muli:200,300,400,600,700,800,900|Open+Sans:300,400,600,700,800|Oswald:200,300,400,500,600,700|Roboto:100,300,400,500,700,900&display=swap');
+  .logo h3 {
+    color: #e74c3c;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 300;
+    font-size: 50px;
+    line-height:1.3;
+}
+.logo p {
+    font-size: 12px;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+    background: #34495e;
+    font-weight: 400;
+    color: #fff;
+    padding-left: 5px;
+}
+  </style>

@@ -9,7 +9,7 @@
 
 <script>
 import Layout from '@/views/layout/Layout.vue';
-import Login from '@/views/google.vue'
+import Login from '@/views/LogIn.vue'
 import {globalStore} from '@/main.js'
 import  {
   ConstRoutes

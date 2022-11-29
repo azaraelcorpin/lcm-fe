@@ -32,7 +32,7 @@
   import Vue from 'vue';
   import {globalStore} from '@/main.js'
   export default {
-    name: 'TestGoogle',
+    name: 'LogIn',
     data () {
       return {
         isInit: false,
