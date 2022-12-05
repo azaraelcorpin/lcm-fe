@@ -18,7 +18,7 @@ export const ConstRoutes = [
   {
     path: '/leave',
     name: 'leave',
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/modules/Leave/LeaveApplications.vue'),
     meta:{
       title:"Leave Account",
     },
@@ -71,7 +71,7 @@ export const ConstRoutes = [
       {
         path: "/user",
         name: "user",
-        component: () => import(/* webpackChunkName: "about" */ '../views/TesTingM.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../components/DatePicker.vue'),
         visible:true,
         meta: {
           title: "User",

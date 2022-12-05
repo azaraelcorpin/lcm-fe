@@ -1,93 +1,208 @@
 <template>
 <div >
     
-    <v-card-title>
-      Leave Types
-      <v-spacer></v-spacer>
-      <v-text-field
-        v-model="searchData"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>      
-    </v-card-title>
-    <!-- <v-navigation-drawer
-      v-model="dialog"
-      absolute
-      temporary
-      :right="true"
-    >
-    <div>asdasda</div>
-    </v-navigation-drawer> -->
-                <v-btn                
-                @click="dialog = !dialog,LEAVE_TYPE.id=null"
-                >
-                New Leave Type
-                </v-btn>
-                <v-alert v-model="alert_show" :type="alert_type" transition="scale-transition" dismissible>
-                  {{alert_text}}
-                </v-alert>               
+    <h3>Employee Information:</h3>
+    <v-card>
+        <v-row no-gutters>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>Name</b>
+                <br/>{{globalStore.empFullname}}
+            </v-col>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>Department</b>
+                <br/>{{globalStore.empOffice}}
+            </v-col>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>Position</b>
+                <br/>{{globalStore.empPosition}}
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>ID</b>
+                <br/>{{globalStore.empID}}
+            </v-col>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>Designation</b>
+                <br/>{{globalStore.empDesignation}}
+            </v-col>
+            <v-col
+                cols="12"
+                sm="4"
+                class="pa-2"
+            >
+                <b>Salary</b>
+                <br/>{{globalStore.empSalary}}
+            </v-col>
+        </v-row>
+        
+    </v-card>
+<br/>
+<v-dialog v-model="alert_show" width="auto " >
+    <v-alert v-model="alert_show" :type="alert_type" transition="scale-transition" dismissible>
+        {{alert_text}}
+    </v-alert>  
+ </v-dialog>   
+    <!-- table -->  
+    <v-card>
+        <h5>Leave Applications Record</h5>
        <v-data-table
                 dense
+                fixed-header
+                height="500"
                 class="elevation-1"
                 :headers="table_header"
-                :items="leaveTypeList"
-                :loading="false"
-                :hide-default-footer="false"
-                :search="searchData"
-                show-current-page
+                :items="leaveApplicationList"
+                :options.sync="options"
+                :footer-props="{
+                    'items-per-page-options': listSize,
+                    'disable-pagination':true,
+                    'prev-icon':'',
+                    'next-icon':'',
+                }"
+                :items-per-page="pagination.pageSize"
                 >
-             <template v-slot:[`item.numberOfDays`]="{ item }">
-                {{['VL','SL'].includes(item.code)?'COMMULATIVE':item.numberOfDays}}
-            </template>
-            <template v-slot:[`item.controls`]="{ item }">
-                <!-- <v-icon medium color="green" > mdi-magnify-plus </v-icon> -->
+                <template v-slot:[`item.application_date`]="{ item }">
+                    {{(new Date(item.application_date)).toLocaleString()}}
+                </template>
+                <template v-slot:[`item.number_of_days`]="{ item }">
+                    {{(item.leave_dates.includes('[')?(item.leave_dates.replace('[','').replace(']','')).split(',').length:item.leave_dates)}}
+                </template>
+                <template v-slot:[`item.controls`]="{ item }">
                 <v-icon
-                    :disabled="(['VL','SL','FL']).includes(item.code)"
                   medium
                   color="green"
-                  @click="LEAVE_TYPE = {...item},dialog=true"
+                  @click="alert('view Data'+item.id,'info')"
+                >
+                  mdi-magnify-plus
+                </v-icon>
+                <v-icon
+                  medium
+                  color="green"
+                  @click="alert('update Data'+item.id,'info')"
                 >
                   mdi-pencil
                 </v-icon>
                 <v-icon
-                :disabled="(['VL','SL','FL']).includes(item.code)"
                   medium
                   color="red"
-                  @click="LEAVE_TYPE = {...item},dialog=true,confirm_dialog=true"
+                  @click="alert('Delete Data'+item.id,'error')"
                 >
                   mdi-delete
-                </v-icon>
+                </v-icon>                
               </template>
               <template v-slot:no-results>
                 <v-alert :value="true" color="warning" icon="mdi-information">
                   Found no results.
                 </v-alert>
               </template> 
-              <!-- <template v-slot:footer>
-                <div  class="text-center">
-                    <v-btn
-                    color="primary"
-                    dark
-                    class="ma-2"
-                    @click="buttonCallback">
-                        Button
-                    </v-btn>
-                </div>
-             </template>              -->
-             <!-- <template v-slot:[`footer.page-text`]>
-         adasdasdad
-            </template> -->
+              <template v-slot:[`footer.prepend`]>
+                    <v-row style="height: 50px; border-style: solid;border-width:1px;border-radius: 3px;border-right: 0px;border-top: 0px;" no-gutters justify="center">
+                        <v-col 
+                            cols="10"
+                            sm="1"
+                            md="2"                                                
+                        >
+                            <div class="text-center" style="margin-top:20px;">                               
+                               <span>Date Application Range</span> <input type="checkbox" v-model="dateRange"/>                                                         
+                            </div>            
+                        </v-col>
+                        <v-col v-if="dateRange"
+                            cols="10"
+                            sm="1"
+                            md="2"                    
+                        >
+                        <DatePicker style="height: 50px;padding:0px;margin-top: -10px;" label="Start Date" v-on:on-select="(value)=>{date=new Date(value)}"></DatePicker>                    
+                        </v-col>
+                        <v-col v-if="dateRange"
+                            cols="10"
+                            sm="1"
+                            md="2"                    
+                        >
+                        <DatePicker style="height: 50px;padding:0px;margin-top: -10px;" label="End Date" v-on:on-select="(value)=>{date=new Date(value)}"></DatePicker>                    
+                        </v-col>
+                        <v-col 
+                            cols="10"
+                            sm="1"
+                            md="2"                    
+                        >
+                            <v-select
+                                class="pa-2"
+                                v-model="select"
+                                :items="['TRN','Type','Details','Status']"
+                                label="Select Field"                            
+                                dense
+                                >
+                            </v-select>                    
+                        </v-col>
+                        <v-col 
+                            cols="10"
+                            sm="6"
+                            md="2"                    
+                        >
+                            <v-text-field
+                                class="pa-2"
+                                v-model="select"
+                                label="Search Value"                            
+                                dense
+                                >
+                            </v-text-field>                    
+                        </v-col>
+                        <v-col 
+                            cols="10"
+                            sm="6"
+                            md="1"
+                        >
+                            <v-btn
+                            class="ma-2"
+                            @click="alert('search value')"
+                            >                            
+                                <v-icon>mdi-magnify</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+             </template>             
+             <template v-slot:[`footer.page-text`] >
+                {{(((pagination.pageNumber-1)*(pagination.pageSize))+1)}} - {{(((pagination.pageNumber-1)*(pagination.pageSize))+pagination.numberOfElements)}}
+                 of {{pagination.totalElements}}
+
+            <v-icon  :disabled="(pagination.pageNumber === 1)" @click="(pagination.pageNumber--,queryData())" >mdi-chevron-left</v-icon>
+            page {{pagination.pageNumber}} of {{pagination.totalPages}}
+            <v-icon :disabled="(pagination.pageNumber === pagination.totalPages)" @click="(pagination.pageNumber++,queryData())" >mdi-chevron-right</v-icon>
+            </template>
             
         </v-data-table> 
-        <!-- <div class="text-center" style="font-size: small;">
-            <v-pagination 
-                    v-model="page"
-                    :length="20"
-                    :total-visible="7">
-                </v-pagination>
-                </div>        -->
+    </v-card>    
+    <br/>
+    <!-- end table-->
+    <v-card>
+                <v-btn                
+                @click="(alert('HI','success'))"
+                >
+                New Leave Application
+                </v-btn>
+    </v-card>
+     <!-- Dialog -->   
     <div>
         <v-dialog style="margin: auto;"
             v-model="dialog"
@@ -112,7 +227,7 @@
                             sm="6"
                             md="4"
                         >
-                            <v-text-field                            
+                            <v-text-field
                             label="Leave Type Code*"
                             hint="(VL,SL,FL,..)"
                             :rules="[rules.requiredField,rules.noSpace]"
@@ -124,15 +239,12 @@
                             sm="6"
                             md="4"
                         >
-                            <v-textarea
-                            auto-grow
-                            rows="1"
-                            row-height="15"
+                            <v-text-field
                             label="Description*"
                             hint="RA. No."
                             :rules="[rules.requiredField]"
                             v-model="LEAVE_TYPE.description"
-                            ></v-textarea>
+                            ></v-text-field>
                         </v-col>
                         <v-col
                             cols="12"
@@ -141,14 +253,14 @@
                         >
                             <v-text-field
                             label="No.of days per year"
-                            hint="Number of allowed days per year [for non Commulative Only]"
+                            hint="Number of allowed days per year"
                             persistent-hint
                             :rules="[rules.numbers]"
                             v-model="LEAVE_TYPE.numberOfDays"
                             ></v-text-field>
                         </v-col>
                         </v-row>
-                    </v-container>  
+                    </v-container>
                     <small>*indicates required field</small>
                     </v-card-text>
                     <v-card-actions>
@@ -242,36 +354,62 @@
             </div>
         </v-dialog>
     </div>
+    <!-- end Dialog -->   
 </div>
 </template>
 
 <script>
+import {globalStore} from '@/main.js'
 import API from "@/API/api.js"
+import DatePicker from '@/components/DatePicker.vue';
 export default{
-    name:'LeaveType',
+    name:'LeaveApplications',
+    components:{DatePicker},
     data(){
       return  {
+        select:"",
+        dateRange:false,
+        date:new Date(),
+        globalStore,
         query:{
             code:"",
             description:"",
             },
             listSize: [1,5,10, 25, 50, 100],
             options:{},
-         pageNumber:0,
-         pageSize:0,   // default value
-         leaveTypeList:[],
+          pagination:
+                    {totalElements:0,
+                    numberOfElements:0,
+                    totalPages:0,
+                    pageNumber:0,
+                    pageSize:1,   // default value
+                    },
+         leaveApplicationList:[],
          table_header:[
         {
-          text: "code",
+          text: "TRN id",
+          value: "transaction_referrence_id",
+        },
+        {
+          text: "Date Applied",
+          value: "application_date",
+        },
+        {
+          text: "Leave Type",
           value: "code",
         },
         {
-          text: "Description",
-          value: "description",
+          text: "Leave Details",
+          value: "leave_details",
         },
         {
-          text: "No. of Days allowed per Year",
-          value: "numberOfDays",
+          text: "Number of working days",
+          value: "number_of_days",
+          sortable:false
+        },
+        {
+          text: "Status",
+          value: "status",
         },
         {
           text: "Actions",
@@ -312,21 +450,24 @@ export default{
             this.query.code = '';
             this.query.description='';
             try {
-                    this.query.pageNumber = this.pageNumber;
-                    this.query.pageSize = this.pageSize;
+                    this.query.pageNo = this.pagination.pageNumber-1;
+                    this.query.pageSize = this.pagination.pageSize;
                 const response =
-                await API.getLeaveTypes(
+                await API.getLeaveApplication(
                     this.query
                 );
-                console.log("leaveType: ", response);
+                console.log("leaveApplication: ", response);
                 if (response.error) {
                 // error getting data
                 console.log(`${response.error}`);
                 this.alert(response.error,'error')
                 } else {
                     
-                this.leaveTypeList = response.leaveTypes;
-                console.log('ert',this.leaveTypeList)
+                this.leaveApplicationList = response.leaveApplications;
+                this.pagination.totalPages = response.totalPages;
+                this.pagination.numberOfElements = response.numberOfElements;
+                this.pagination.totalElements = response.totalElements;
+                console.log('ert',this.leaveApplicationList)
                 }
             } catch (e) {
                 console.log(e);
@@ -399,7 +540,7 @@ export default{
             
     },
     mounted(){
-        this.queryData();
+        // this.queryData();
     },
     watch: {
         // whenever question changes, this function will run
@@ -407,7 +548,21 @@ export default{
         if (newState === true) {
             this.alert_show=false;
         }
+        },
+        options(newState,oldState){
+            
+            if((newState.itemsPerPage != oldState.itemsPerPage))
+            {
+                this.pagination.pageNumber = newState.page;
+                this.pagination.pageSize = newState.itemsPerPage;
+                this.queryData();
+                // setTimeout(()=>{this.alert_show=false}, 5000)
+            }
         }
+
     }
 }
 </script>
+<style>
+
+</style>

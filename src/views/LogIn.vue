@@ -74,6 +74,7 @@
               alert('Invalid email account');
               return;
             }
+            /// Code to query from DB userData Employee{fullname,ID,Position,Office,Designation,Salary}
             console.log(this.globalStore.profilePicUrl);
           this.isSignIn = this.$gAuth.isAuthorized
 

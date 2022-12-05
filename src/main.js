@@ -14,6 +14,12 @@ export const globalStore = new Vue({
     profilePicUrl: '',
     userName:'',
     userEmail:'',
+    empFullname:'Juan dela Cruz',
+    empID:'tmpID',
+    empPosition:'tmpDataPosition',
+    empOffice:'tmpDataOffice',
+    empDesignation:'tmpDataDesignation',
+    empSalary:'tmpDataSalary'
   }
 })
 

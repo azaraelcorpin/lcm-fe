@@ -27,24 +27,26 @@
                 </v-btn>
                 <v-alert v-model="alert_show" :type="alert_type" transition="scale-transition" dismissible>
                   {{alert_text}}
-                </v-alert>               
+                </v-alert>    
+                {{options}}    
        <v-data-table
                 dense
                 class="elevation-1"
                 :headers="table_header"
                 :items="leaveTypeList"
-                :loading="false"
-                :hide-default-footer="false"
                 :search="searchData"
-                show-current-page
+                :options.sync="options"
+                :footer-props="{
+                    'items-per-page-options': listSize,
+                    'disable-pagination':true,
+                    'prev-icon':'',
+                    'next-icon':'',
+                }"
+                :items-per-page="pagination.pageSize"
                 >
-             <template v-slot:[`item.numberOfDays`]="{ item }">
-                {{['VL','SL'].includes(item.code)?'COMMULATIVE':item.numberOfDays}}
-            </template>
             <template v-slot:[`item.controls`]="{ item }">
                 <!-- <v-icon medium color="green" > mdi-magnify-plus </v-icon> -->
                 <v-icon
-                    :disabled="(['VL','SL','FL']).includes(item.code)"
                   medium
                   color="green"
                   @click="LEAVE_TYPE = {...item},dialog=true"
@@ -52,7 +54,6 @@
                   mdi-pencil
                 </v-icon>
                 <v-icon
-                :disabled="(['VL','SL','FL']).includes(item.code)"
                   medium
                   color="red"
                   @click="LEAVE_TYPE = {...item},dialog=true,confirm_dialog=true"
@@ -76,9 +77,14 @@
                     </v-btn>
                 </div>
              </template>              -->
-             <!-- <template v-slot:[`footer.page-text`]>
-         adasdasdad
-            </template> -->
+             <template v-slot:[`footer.page-text`]>
+                {{(((pagination.pageNumber-1)*(pagination.pageSize))+1)}} - {{(((pagination.pageNumber-1)*(pagination.pageSize))+pagination.numberOfElements)}}
+                 of {{pagination.totalElements}}
+
+            <v-icon  :disabled="(pagination.pageNumber === 1)" @click="(pagination.pageNumber--,queryData())" >mdi-chevron-left</v-icon>
+            page {{pagination.pageNumber}} of {{pagination.totalPages}}
+            <v-icon :disabled="(pagination.pageNumber === pagination.totalPages)" @click="(pagination.pageNumber++,queryData())" >mdi-chevron-right</v-icon>
+            </template>
             
         </v-data-table> 
         <!-- <div class="text-center" style="font-size: small;">
@@ -112,7 +118,7 @@
                             sm="6"
                             md="4"
                         >
-                            <v-text-field                            
+                            <v-text-field
                             label="Leave Type Code*"
                             hint="(VL,SL,FL,..)"
                             :rules="[rules.requiredField,rules.noSpace]"
@@ -124,15 +130,12 @@
                             sm="6"
                             md="4"
                         >
-                            <v-textarea
-                            auto-grow
-                            rows="1"
-                            row-height="15"
+                            <v-text-field
                             label="Description*"
                             hint="RA. No."
                             :rules="[rules.requiredField]"
                             v-model="LEAVE_TYPE.description"
-                            ></v-textarea>
+                            ></v-text-field>
                         </v-col>
                         <v-col
                             cols="12"
@@ -141,14 +144,14 @@
                         >
                             <v-text-field
                             label="No.of days per year"
-                            hint="Number of allowed days per year [for non Commulative Only]"
+                            hint="Number of allowed days per year"
                             persistent-hint
                             :rules="[rules.numbers]"
                             v-model="LEAVE_TYPE.numberOfDays"
                             ></v-text-field>
                         </v-col>
                         </v-row>
-                    </v-container>  
+                    </v-container>
                     <small>*indicates required field</small>
                     </v-card-text>
                     <v-card-actions>
@@ -257,8 +260,13 @@ export default{
             },
             listSize: [1,5,10, 25, 50, 100],
             options:{},
-         pageNumber:0,
-         pageSize:0,   // default value
+          pagination:
+                    {totalElements:0,
+                    numberOfElements:0,
+                    totalPages:0,
+                    pageNumber:0,
+                    pageSize:1,   // default value
+                    },
          leaveTypeList:[],
          table_header:[
         {
@@ -270,7 +278,7 @@ export default{
           value: "description",
         },
         {
-          text: "No. of Days allowed per Year",
+          text: "No. of Days per Year",
           value: "numberOfDays",
         },
         {
@@ -312,8 +320,8 @@ export default{
             this.query.code = '';
             this.query.description='';
             try {
-                    this.query.pageNumber = this.pageNumber;
-                    this.query.pageSize = this.pageSize;
+                    this.query.pageNo = this.pagination.pageNumber-1;
+                    this.query.pageSize = this.pagination.pageSize;
                 const response =
                 await API.getLeaveTypes(
                     this.query
@@ -326,6 +334,9 @@ export default{
                 } else {
                     
                 this.leaveTypeList = response.leaveTypes;
+                this.pagination.totalPages = response.totalPages;
+                this.pagination.numberOfElements = response.numberOfElements;
+                this.pagination.totalElements = response.totalElements;
                 console.log('ert',this.leaveTypeList)
                 }
             } catch (e) {
@@ -399,7 +410,7 @@ export default{
             
     },
     mounted(){
-        this.queryData();
+        // this.queryData();
     },
     watch: {
         // whenever question changes, this function will run
@@ -407,7 +418,18 @@ export default{
         if (newState === true) {
             this.alert_show=false;
         }
+        },
+        options(newState,oldState){
+            
+            if((newState.itemsPerPage != oldState.itemsPerPage))
+            {
+                this.pagination.pageNumber = newState.page;
+                this.pagination.pageSize = newState.itemsPerPage;
+                this.queryData();
+                // setTimeout(()=>{this.alert_show=false}, 5000)
+            }
         }
+
     }
 }
 </script>

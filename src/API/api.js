@@ -3,6 +3,7 @@ import {globalStore} from '@/main.js'
 
 export default{
 
+  ///// start leave type
   async getLeaveTypes(parameters) {
     var url = `${process.env.VUE_APP_LCM_API_URL}/leaveType/search`
     const config = {
@@ -110,6 +111,47 @@ export default{
     } catch (error) {
       console.log(error.response);
       return { error: error.response.data.message }
+    }
+  },
+  ///// end LeaveType
+
+  ////  start Leave application
+  async getLeaveApplication(parameters) {
+    var url = `${process.env.VUE_APP_LCM_API_URL}/leaveApplication/search`
+    const config = {
+      headers: {
+        Authorization: globalStore.userEmail,
+      }
+    }
+    const body = {
+      empId:parameters.empId,
+      dateFrom:parameters.dateFrom,
+      dateTo:parameters.dateTo,
+      transactionReferrenceId:parameters.transactionReferrenceId,
+      department:parameters.department,
+      position:parameters.position,
+      employeeName:parameters.employeeName,
+      leaveTypeId:parameters.leaveTypeId,
+      leaveDetails:parameters.leaveDetails,
+      leaveDate:parameters.leaveDate,
+      commutation:parameters.commutation,
+      status:parameters.status,
+      pageNo:parameters.pageNo??0,
+      pageSize:parameters.pageSize??0
+    }
+    try {
+      const response = await Vue.axios.post(url, body, config);
+      console.log(response);
+      if (response && response.data && response.status == 200) {
+        return response.data;
+      } else if (response && response.data && response.data.message) {
+        return { error: response.data.message };
+      } else {
+        return { error: "Sorry. Error query leave type." };
+      }
+    } catch (error) {
+      console.log(error);
+      return { error: error.message }
     }
   },
 }

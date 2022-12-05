@@ -21,7 +21,7 @@
       </v-app-bar>
       <v-navigation-drawer app
         v-model="drawer"
-        src="https://wallpaperaccess.com/full/1549409.jpg"
+        src="@/assets/bg.jpeg"
        
       >
         <v-list-item>
