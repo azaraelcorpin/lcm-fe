@@ -162,7 +162,7 @@
                         >
                             <v-text-field
                                 class="pa-2"
-                                v-model="select"
+                                v-model="searchData"
                                 label="Search Value"                            
                                 dense
                                 >
@@ -375,14 +375,14 @@ export default{
             code:"",
             description:"",
             },
-            listSize: [1,5,10, 25, 50, 100],
+            listSize: [5,10, 25, 50, 100],
             options:{},
           pagination:
                     {totalElements:0,
                     numberOfElements:0,
                     totalPages:0,
                     pageNumber:0,
-                    pageSize:1,   // default value
+                    pageSize:10,   // default value
                     },
          leaveApplicationList:[],
          table_header:[

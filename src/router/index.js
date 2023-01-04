@@ -60,7 +60,7 @@ export const ConstRoutes = [
       {
         path: "/leavecredit",
         name: "leavecredit",
-        component: () => import(/* webpackChunkName: "about" */ '../views/TesTingM.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/modules/Admin/LeaveCredit.vue'),
         visible:true,
         meta: {
           title: "Leave Credit",
