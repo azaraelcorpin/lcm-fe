@@ -269,7 +269,7 @@ export default{
       VlAmount: parameters.totalVlEarned,
       SlAmount: parameters.totalSlEarned,
       transactionReferrenceId: parameters.trnId,
-      remarks:parameters.remarks,
+      remarks:parameters.remarks??'',
       update_credits_remarks:parameters.update_credits_remarks,
     }
     try {

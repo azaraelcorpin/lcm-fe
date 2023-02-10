@@ -56,13 +56,13 @@
                 >
                   mdi-pencil
                 </v-icon>
-                <v-icon
+                <!-- <v-icon
                   medium
                   color="red"
                   @click="LEAVE_CREDIT = {...item},dialog=true,confirm_dialog=true"
                 >
                   mdi-delete
-                </v-icon>
+                </v-icon> -->
               </template>
               <template v-slot:no-results>
                 <v-alert :value="true" color="warning" icon="mdi-information">
